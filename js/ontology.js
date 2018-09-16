@@ -11,54 +11,7 @@ var data = [
       ["8", "out"],
       ["9", "in"],
       ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-      ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"]
+
     ]
   }
 ];
@@ -85,7 +38,7 @@ var angle = 10;
 var radius = 10;
 var basicOffset = 0;
 
-var gap = 6;
+var gap = 10;
 
 var chunkSize = (outerCircleRadius * 2) + (gap * 2);
 
@@ -127,7 +80,8 @@ var circles = svgContainer
   })
   .attr("r", function(d, i) {
     return outerCircleRadius;
-  });
+  })
+  .attr("fill", "red")
 
 var text = svgContainer
   .selectAll("text")
@@ -168,11 +122,23 @@ var texts = text
   .attr("y2", function(d, i) {
     return originY - (radius) * Math.cos((2 * Math.PI * i) / len);
   })  
-  .attr("stroke","red")  
-  .attr("stroke-width",2)  
-  .attr("marker-end","url(#arrow)");  
-
-
+  .attr("marker-end", "url(#arrow)")
+  .attr("stroke",'red')
+  .attr("stroke-width", 2);
+ 
+  svgContainer.append("defs")
+  .append("marker")
+  .attr("id","arrow")
+    .attr("viewBox","0 -5 10 10")
+    .attr("refX",5)
+    .attr("refY",0)
+    .attr("markerWidth",4)
+    .attr("markerHeight",4)
+    .attr("orient","auto")
+  
+  .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr("class", "arrowHead");
 
 
 svgContainer
