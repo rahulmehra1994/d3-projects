@@ -6,13 +6,39 @@ var data = [
       ["3", "in"],
       ["4", "in"],
       ["5", "out"],
-      ["6", "in"],
-      ["7", "in"],
-      ["8", "out"],
-      ["9", "in"],
-      ["10", "in"],
-
+      ["1", "in"],
+      ["2", "out"],
+      ["3", "in"],
+      ["4", "in"],
+      ["5", "out"]
     ]
+  }
+];
+
+var markers = [
+  {
+    id: 0,
+    name: "circle",
+    path: "M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0",
+    viewbox: "-6 -6 12 12"
+  },
+  {
+    id: 1,
+    name: "square",
+    path: "M 0,0 m -5,-5 L 5,-5 L 5,5 L -5,5 Z",
+    viewbox: "-5 -5 10 10"
+  },
+  {
+    id: 2,
+    name: "arrow",
+    path: "M 0,0 m -5,-5 L 5,0 L -5,5 Z",
+    viewbox: "-5 -5 10 10"
+  },
+  {
+    id: 2,
+    name: "stub",
+    path: "M 0,0 m -1,-5 L 1,-5 L 1,5 L -1,5 Z",
+    viewbox: "-1 -5 2 10"
   }
 ];
 
@@ -36,11 +62,11 @@ var outerCircleRadius = 10;
 var offset = 30;
 var angle = 10;
 var radius = 10;
-var basicOffset = 0;
+var basicOffset = 10;
 
 var gap = 10;
 
-var chunkSize = (outerCircleRadius * 2) + (gap * 2);
+var chunkSize = outerCircleRadius * 2 + gap * 2;
 
 function adjuster(r) {
   var circum = 2 * Math.PI * r;
@@ -81,7 +107,58 @@ var circles = svgContainer
   .attr("r", function(d, i) {
     return outerCircleRadius;
   })
-  .attr("fill", "red")
+  .attr("fill", "red");
+
+  var color = d3.scale.category10()
+
+var marker = svgContainer
+  .append("svg:defs")
+  .selectAll("marker")
+  .data(markers)
+  .enter()
+  .append("svg:marker")
+  .attr("id", function(d) {
+    return "marker_" + d.name;
+  })
+  .attr("markerHeight", 5)
+  .attr("markerWidth", 5)
+  .attr("markerUnits", "strokeWidth")
+  .attr("orient", "auto")
+  .attr("refX", outerCircleRadius + 10)
+  .attr("refY", 0)
+  .attr("viewBox", function(d) {
+    return d.viewbox;
+  })
+  .append("svg:path")
+  .attr("d", function(d) {
+    return d.path;
+  })
+  .attr("fill", function(d, i) {
+    return color(i);
+  });
+
+var lines = svgContainer
+  .selectAll("line")
+  .data(tempData)
+  .enter()
+  .append("line")
+  .attr("x1", originX)
+  .attr("y1", originY)
+  .attr("x2", function(d, i) {
+    return originX + (radius + basicOffset) * Math.sin((2 * Math.PI * i) / len);
+  })
+  .attr("y2", function(d, i) {
+    return originY - (radius + basicOffset) * Math.cos((2 * Math.PI * i) / len);
+  })
+  .attr("marker-end", function(d) {
+    if (d[1] === "out") {
+      return "url(#marker_circle)";
+    }
+  })
+  .attr("stroke", "red")
+  .attr("stroke-width", 2);
+
+
 
 var text = svgContainer
   .selectAll("text")
@@ -89,7 +166,7 @@ var text = svgContainer
   .enter()
   .append("text");
 
-basicOffset = 20;
+basicOffset = basicOffset + 20;
 
 var texts = text
   .attr("x", function(d, i) {
@@ -105,45 +182,12 @@ var texts = text
   .attr("font-family", "sans-serif")
   .attr("font-size", "12px")
   .attr("fill", "red")
-  .attr("text-anchor", 'middle')
-  .attr("transform", 'translate(0, 5)');
+  .attr("text-anchor", "middle")
+  .attr("transform", "translate(0, 5)");
 
-
-  var lines = svgContainer
-  .selectAll("line")
-  .data(tempData)
-  .enter()
-  .append("line")
-  .attr("x1", originX)  
-  .attr("y1", originY)  
-  .attr("x2", function(d, i) {
-    return originX + (radius) * Math.sin((2 * Math.PI * i) / len);
-  })  
-  .attr("y2", function(d, i) {
-    return originY - (radius) * Math.cos((2 * Math.PI * i) / len);
-  })  
-  .attr("marker-end", "url(#arrow)")
-  .attr("stroke",'red')
-  .attr("stroke-width", 2);
- 
-  svgContainer.append("defs")
-  .append("marker")
-  .attr("id","arrow")
-    .attr("viewBox","0 -5 10 10")
-    .attr("refX",5)
-    .attr("refY",0)
-    .attr("markerWidth",4)
-    .attr("markerHeight",4)
-    .attr("orient","auto")
-  
-  .append("path")
-    .attr("d", "M0,-5L10,0L0,5")
-    .attr("class", "arrowHead");
-
-
-svgContainer
-  .append("circle")
-  .attr("cx", originX)
-  .attr("cy", originY)
-  .attr("r", radius * 0.5)
-  .fill('color', 'lightgrey');
+// svgContainer
+//   .append("circle")
+//   .attr("cx", originX)
+//   .attr("cy", originY)
+//   .attr("r", radius * 0.5)
+//   .fill('color', 'lightgrey');
