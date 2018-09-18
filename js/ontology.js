@@ -1,16 +1,18 @@
 var data = [
   {
     n1: [
-      ["1", "in"],
-      ["2", "out"],
-      ["3", "in"],
-      ["4", "in"],
-      ["5", "out"],
-      ["1", "in"],
-      ["2", "out"],
-      ["3", "in"],
-      ["4", "in"],
-      ["5", "out"]
+      ["n1", "in"],
+      ["n2", "out"],
+      ["n3", "in"],
+      ["n4", "out"],
+      ["n5", "in"],
+      ["n6", "in"],
+      ["n7", "out"],
+      ["n8", "in"],
+      ["n9", "in"],
+      ["n10", "out"],
+
+      
     ]
   }
 ];
@@ -44,10 +46,14 @@ var markers = [
     id: 4,
     name: "arrowIn",
     path: "M 0,0 m 5,5 L -5,0 L 5,-5 Z",
-    viewbox: "-5 -5 10 10",
-  },
+    viewbox: "-5 -5 10 10"
+  }
 ];
 
+var biggerCircleColor = "#daa520";
+var lineColor = "#A6ACAF";
+var smallerCircleColor = "crimson";
+var labelColor = "#3b5998";
 var width = 1000;
 var height = 1000;
 //Make an SVG Container
@@ -68,7 +74,7 @@ var outerCircleRadius = 10;
 var offset = 30;
 var angle = 10;
 var radius = 10;
-var basicOffset = 10;
+var basicOffset = 40;
 
 var gap = 10;
 
@@ -113,9 +119,9 @@ var circles = svgContainer
   .attr("r", function(d, i) {
     return outerCircleRadius;
   })
-  .attr("fill", "red");
+  .attr("fill", smallerCircleColor);
 
-  var color = d3.scale.category10()
+var color = d3.scale.category10();
 
 var marker = svgContainer
   .append("svg:defs")
@@ -126,11 +132,11 @@ var marker = svgContainer
   .attr("id", function(d) {
     return "marker_" + d.name;
   })
-  .attr("markerHeight", 5)
-  .attr("markerWidth", 5)
+  .attr("markerHeight", 6)
+  .attr("markerWidth", 6)
   .attr("markerUnits", "strokeWidth")
   .attr("orient", "auto")
-  .attr("refX", outerCircleRadius + 10)
+  .attr("refX", (basicOffset)/2)
   .attr("refY", 0)
   .attr("viewBox", function(d) {
     return d.viewbox;
@@ -151,10 +157,18 @@ var lines = svgContainer
   .attr("x1", originX)
   .attr("y1", originY)
   .attr("x2", function(d, i) {
-    return originX + (radius + basicOffset) * Math.sin((2 * Math.PI * i) / len);
+    return (
+      originX +
+      (radius + basicOffset - outerCircleRadius) *
+        Math.sin((2 * Math.PI * i) / len)
+    );
   })
   .attr("y2", function(d, i) {
-    return originY - (radius + basicOffset) * Math.cos((2 * Math.PI * i) / len);
+    return (
+      originY -
+      (radius + basicOffset - outerCircleRadius) *
+        Math.cos((2 * Math.PI * i) / len)
+    );
   })
   .attr("marker-end", function(d) {
     if (d[1] === "out") {
@@ -164,9 +178,8 @@ var lines = svgContainer
       return "url(#marker_arrowIn)";
     }
   })
-  .attr("stroke", "red")
+  .attr("stroke", lineColor)
   .attr("stroke-width", 2);
-
 
 var text = svgContainer
   .selectAll("text")
@@ -185,17 +198,18 @@ var texts = text
     return originY - (radius + basicOffset) * Math.cos((2 * Math.PI * i) / len);
   })
   .text(function(d, i) {
-    return i;
+    return d[0];
   })
   .attr("font-family", "sans-serif")
   .attr("font-size", "12px")
-  .attr("fill", "red")
+  .attr("fill", labelColor)
   .attr("text-anchor", "middle")
-  .attr("transform", "translate(0, 5)");
+  .attr("transform", "translate(0, 5)")
+  .style("font-weight", "bold");
 
 svgContainer
   .append("circle")
   .attr("cx", originX)
   .attr("cy", originY)
   .attr("r", radius * 0.5)
-  .fill('color', 'lightgrey');
+  .attr("fill", biggerCircleColor);
