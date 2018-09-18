@@ -35,11 +35,17 @@ var markers = [
     viewbox: "-5 -5 10 10"
   },
   {
-    id: 2,
+    id: 3,
     name: "stub",
     path: "M 0,0 m -1,-5 L 1,-5 L 1,5 L -1,5 Z",
     viewbox: "-1 -5 2 10"
-  }
+  },
+  {
+    id: 4,
+    name: "arrowIn",
+    path: "M 0,0 m 5,5 L -5,0 L 5,-5 Z",
+    viewbox: "-5 -5 10 10",
+  },
 ];
 
 var width = 1000;
@@ -152,12 +158,14 @@ var lines = svgContainer
   })
   .attr("marker-end", function(d) {
     if (d[1] === "out") {
-      return "url(#marker_circle)";
+      return "url(#marker_arrow)";
+    }
+    if (d[1] === "in") {
+      return "url(#marker_arrowIn)";
     }
   })
   .attr("stroke", "red")
   .attr("stroke-width", 2);
-
 
 
 var text = svgContainer
@@ -185,9 +193,9 @@ var texts = text
   .attr("text-anchor", "middle")
   .attr("transform", "translate(0, 5)");
 
-// svgContainer
-//   .append("circle")
-//   .attr("cx", originX)
-//   .attr("cy", originY)
-//   .attr("r", radius * 0.5)
-//   .fill('color', 'lightgrey');
+svgContainer
+  .append("circle")
+  .attr("cx", originX)
+  .attr("cy", originY)
+  .attr("r", radius * 0.5)
+  .fill('color', 'lightgrey');
