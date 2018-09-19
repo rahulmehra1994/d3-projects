@@ -1,8 +1,8 @@
 var data = [
   {
     n1: [
-      ["n1", "in"],
-      ["n2", "out"],
+      ["hello i am here", "in"],
+      ["hello i am here", "out"],
       ["n3", "in"],
       ["n4", "out"],
       ["n5", "in"],
@@ -10,9 +10,17 @@ var data = [
       ["n7", "out"],
       ["n8", "in"],
       ["n9", "in"],
-      ["n10", "out"],
-
-      
+      ["hello i am here0", "out"],
+      ["hello i am here", "in"],
+      ["hello i am here", "out"],
+      ["n3", "in"],
+      ["n4", "out"],
+      ["n5", "in"],
+      ["n6", "in"],
+      ["n7", "out"],
+      ["n8", "in"],
+      ["n9", "in"],
+      ["hello i am here0", "out"],
     ]
   }
 ];
@@ -50,40 +58,27 @@ var markers = [
   }
 ];
 
+var tempData = data[0][Object.keys(data[0])[0]];
+var offset = 30 * [tempData.length * 0.2];
+var len = tempData.length;
 var biggerCircleColor = "#daa520";
 var lineColor = "#A6ACAF";
 var smallerCircleColor = "crimson";
 var labelColor = "#3b5998";
-var width = 1000;
-var height = 1000;
-//Make an SVG Container
-var svgContainer = d3
-  .select("body")
-  .append("svg")
-  .attr("width", width)
-  .attr("height", height);
-
-var tempData = data[0][Object.keys(data[0])[0]];
-var offset = 30 * [tempData.length * 0.2];
-var len = tempData.length;
-
-var originX = 350;
-var originY = 350;
+var width;
+var height;
 var innerCircleRadius = 20;
 var outerCircleRadius = 10;
 var offset = 30;
 var angle = 10;
 var radius = 10;
 var basicOffset = 40;
-
-var gap = 10;
-
+var gap = 0;
 var chunkSize = outerCircleRadius * 2 + gap * 2;
 
 function adjuster(r) {
   var circum = 2 * Math.PI * r;
   var count = circum / chunkSize;
-  console.log("adjuster ", r, chunkSize, circum / chunkSize, len);
   if (count > len) {
     radius = r;
     return;
@@ -93,17 +88,24 @@ function adjuster(r) {
 }
 
 adjuster(radius);
-console.log(radius);
+width = (radius * 2) + (basicOffset*2) + 2*(2 * outerCircleRadius) + 100;
+height = (radius * 2) + (basicOffset*2) + 2*(2 * outerCircleRadius) + 100;
+var originX = width/2;
+var originY = height/2;
+
+console.log(radius)
+
+var svgContainer = d3
+  .select("body")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
 
 var scaleX = d3.scale
   .linear()
   .domain([0, tempData.length])
   .range([0, width]);
 
-var scaleY = d3.scale
-  .linear()
-  .domain([0, tempData.length])
-  .range([0, height]);
 
 var circles = svgContainer
   .selectAll("circle")
@@ -147,7 +149,9 @@ var marker = svgContainer
   })
   .attr("fill", function(d, i) {
     return color(i);
-  });
+  })
+  .attr("stroke", "black")
+  .attr("stroke-width", 1);
 
 var lines = svgContainer
   .selectAll("line")
@@ -191,7 +195,6 @@ basicOffset = basicOffset + 20;
 
 var texts = text
   .attr("x", function(d, i) {
-    console.log(d);
     return originX + (radius + basicOffset) * Math.sin((2 * Math.PI * i) / len);
   })
   .attr("y", function(d, i) {
@@ -203,13 +206,28 @@ var texts = text
   .attr("font-family", "sans-serif")
   .attr("font-size", "12px")
   .attr("fill", labelColor)
+  .style("font-weight", "bold")
   .attr("text-anchor", "middle")
-  .attr("transform", "translate(0, 5)")
-  .style("font-weight", "bold");
+  .attr('class', 'labels')
+//   .attr("transform", 
+//   function(d, i){
+//     // if(i%2 === 0){
+//     //   return "";
+//     // }else{
+//     //   return "translate(0, 5) rotate(10deg)";
+//     // }
+//     return "rotate(-9)"
+//   }
+// ).attr("transform", translate)
+
+d3.selectAll('.labels')
+.attr('transform', 'skewY(-20)')
+.attr("transform-origin", '50% 50%')
+ 
 
 svgContainer
   .append("circle")
   .attr("cx", originX)
   .attr("cy", originY)
-  .attr("r", radius * 0.5)
+  .attr("r", radius * 0.4)
   .attr("fill", biggerCircleColor);
