@@ -1,75 +1,7 @@
-var dataOut = [
-  {
-    n1: [
-      ["node2", "in"],
-      ["hello i ", "out"],
-      ["n3", "in"],
-      ["n4", "out"],
-      ["n5", "in"]
-    ]
-  }
-];
-
-var dataOut2 = [
-  {
-    node2: [
-      ["n1", "in"],
-      ["hello i ", "out"],
-      ["n3", "in"],
-      ["n4", "out"],
-      ["n5", "in"],
-      ["n6", "in"]
-    ]
-  }
-];
-
-var dataOut3 = [
-  {
-    node3: [
-      ["n2", "in"],
-      ["hello i ", "out"],
-      ["n4", "out"],
-      ["n5", "in"]
-    ]
-  }
-];
-
-
-var markers = [
-  {
-    id: 0,
-    name: "circle",
-    path: "M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0",
-    viewbox: "-6 -6 12 12"
-  },
-  {
-    id: 1,
-    name: "square",
-    path: "M 0,0 m -5,-5 L 5,-5 L 5,5 L -5,5 Z",
-    viewbox: "-5 -5 10 10"
-  },
-  {
-    id: 2,
-    name: "arrow",
-    path: "M 0,0 m -5,-5 L 5,0 L -5,5 Z",
-    viewbox: "-5 -5 10 10"
-  },
-  {
-    id: 3,
-    name: "stub",
-    path: "M 0,0 m -1,-5 L 1,-5 L 1,5 L -1,5 Z",
-    viewbox: "-1 -5 2 10"
-  },
-  {
-    id: 4,
-    name: "arrowIn",
-    path: "M 0,0 m 5,5 L -5,0 L 5,-5 Z",
-    viewbox: "-5 -5 10 10"
-  }
-];
-
-function creator(radius, data) {
-  var tempData = data;
+function creator(radius, data, key) {
+  var centerNodeName = key;
+  console.log(centerNodeName, data[key]);
+  var tempData = data[key];
   var offset = 30 * [tempData.length * 0.2];
   var len = tempData.length;
   var biggerCircleColor = "#daa520";
@@ -146,7 +78,7 @@ function creator(radius, data) {
     .attr("markerWidth", 6)
     .attr("markerUnits", "strokeWidth")
     .attr("orient", "auto")
-    .attr("refX", basicOffset / 2)
+    .attr("refX", basicOffset * 0.2)
     .attr("refY", 0)
     .attr("viewBox", function(d) {
       return d.viewbox;
@@ -235,21 +167,18 @@ function creator(radius, data) {
 
   console.log(tempData);
 
-  var circles2 = svgContainer
+  var centerCirc = svgContainer
     .append("circle")
     .attr("cx", originX)
     .attr("cy", originY)
-    .attr("r", radius * 0.4)
+    .attr("r", radius * 0.6)
     .attr("fill", biggerCircleColor)
-    .on("click", function() {
-      onclick2(tempData);
-    });
 
   svgContainer
     .append("text")
     .attr("x", originX)
     .attr("y", originY)
-    .text("sds")
+    .text(centerNodeName)
     .attr("font-family", "sans-serif")
     .attr("font-size", "12px")
     .attr("fill", "black")
@@ -303,23 +232,13 @@ function creator(radius, data) {
 
   function onclick(d) {
     if (true) {
-      d3.select("#a").remove();
-      creator(10, dataOut2[0][Object.keys(dataOut2[0])[0]]);
-      console.log("TCL: onclick -> data[2]", d);
+      // d3.select("#a").remove();
+      creator(10, datas, d[0]);
+      console.log("TCL: onclick ", d[0], datas);
       var coords = d3.mouse(this);
-    }
-  }
-
-  function onclick2(d) {
-    console.log(d);
-    if (false) {
-      d3.select("#a").remove();
-      creator(10, d[2][d[0]]);
     }
   }
 }
 
-var dataModified = dataOut[0][Object.keys(dataOut[0])[0]];
-console.log("TCL: dataModified", dataModified);
 
-creator(10, dataModified, dataOut[0]);
+creator(10, datas, "n1");
