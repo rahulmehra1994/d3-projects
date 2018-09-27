@@ -1,28 +1,28 @@
 var datas = {
   n1: [
-    ["n2", "in"],
+    ["nandramdayaram", "in"],
     ["n3", "in"],
     ["n4", "out"],
     ["n5", "in"]
   ],
-  n2: [
+  nandramdayaram: [
     ["n1", "in"],
     ["n3", "in"],
     ["n4", "in"]
   ],
   n3: [
     ["n1", "in"],
-    ["n2", "in"],
+    ["nandramdayaram", "in"],
     ["n4", "in"],
   ],
   n4: [
     ["n1", "in"],
-    ["n2", "in"],
+    ["nandramdayaram", "in"],
     ["n3", "in"],    
   ],
   n5: [
     ["n1", "in"],
-    ["n2", "in"],
+    ["nandramdayaram", "in"],
   ]
 }
 

@@ -38,30 +38,54 @@ function creator(radius, data, key) {
   var svgContainer = d3
     .select("body")
     .append("svg")
-    .attr("id", "a")
+    .attr("id", key)
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("opacity", 0);
+
+  animateWholeSvg();
+
+  function animateWholeSvg() {
+    d3.select("#" + key)
+      .transition()
+      .duration(1000)
+      .style("opacity", 1);
+  }
 
   var circles = svgContainer
     .selectAll("circle")
     .data(tempData)
     .enter()
     .append("circle")
-    .attr("cx", function(d, i) {
-      return (
-        originX + (radius + basicOffset) * Math.sin((2 * Math.PI * i) / len)
-      );
-    })
-    .attr("cy", function(d, i) {
-      return (
-        originY - (radius + basicOffset) * Math.cos((2 * Math.PI * i) / len)
-      );
-    })
+    .attr("cx", originX)
+    .attr("cy", originY)
     .attr("r", function(d, i) {
-      return outerCircleRadius;
+      return 0;
     })
     .attr("fill", smallerCircleColor)
-    .on("click", onclick);
+    .on("click", expandOntology)
+    .style("cursor", "pointer");
+
+  animateOuterCircles();
+
+  function animateOuterCircles() {
+    circles
+      .transition()
+      .duration(1000)
+      .attr("cx", function(d, i) {
+        return (
+          originX + (radius + basicOffset) * Math.sin((2 * Math.PI * i) / len)
+        );
+      })
+      .attr("cy", function(d, i) {
+        return (
+          originY - (radius + basicOffset) * Math.cos((2 * Math.PI * i) / len)
+        );
+      })
+      .attr("r", function(d, i) {
+        return outerCircleRadius;
+      });
+  }
 
   var color = d3.scale.category10();
 
@@ -131,9 +155,16 @@ function creator(radius, data, key) {
     .enter()
     .append("text");
 
-  basicOffset = basicOffset + 20;
+  // Define the div for the tooltip
+  var div = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
-  var texts = text
+  // basicOffset = basicOffset + 20;
+
+  var outerCircleTexts = text
     .attr("x", function(d, i) {
       return (
         originX + (radius + basicOffset) * Math.sin((2 * Math.PI * i) / len)
@@ -151,21 +182,11 @@ function creator(radius, data, key) {
     .attr("font-size", "12px")
     .attr("fill", labelColor)
     .style("font-weight", "bold")
+    // .style("font-transformation", "ca")
     .attr("text-anchor", "middle")
     .attr("class", "labels")
-    .attr("transform", function(d, i) {
-      if (tempData.length <= i) {
-        if (tempData[i + 1][0].length >= tempData[i][0].length) {
-          return "translate(0, " + d[0].length * 2 + ")";
-        } else {
-          return "translate(0, " + d[0].length * 0.5 + ")";
-        }
-      }
-    })
     .on("mouseover", handleMouseOver)
     .on("mouseout", handleMouseOut);
-
-  console.log(tempData);
 
   var centerCirc = svgContainer
     .append("circle")
@@ -173,72 +194,70 @@ function creator(radius, data, key) {
     .attr("cy", originY)
     .attr("r", radius * 0.6)
     .attr("fill", biggerCircleColor)
+    .style("cursor", "pointer")
+    .on("click", () => {
+      deleteOntology(centerNodeName);
+    });
 
   svgContainer
     .append("text")
     .attr("x", originX)
     .attr("y", originY)
-    .text(centerNodeName)
+    .text(centerNodeName.substr(0, 5))
     .attr("font-family", "sans-serif")
     .attr("font-size", "12px")
     .attr("fill", "black")
     .style("font-weight", "bold")
     .attr("text-anchor", "middle")
-    .attr("class", "labels");
+    .attr("class", "labels")
+    .on("mouseover", () => {
+      handleMouseOver([centerNodeName]);
+    })
+    .on("mouseout", handleMouseOut);
 
-  function handleMouseOver(d, i) {
-    // Add interactivity
-    // Use D3 to select element, change color and size
-    d3.select(this).attr({
-      fill: "orange",
-      r: radius * 2
-    });
-
-    // Specify where to put label of text
-    svgContainer
-      .append("text")
-      .attr({
-        id: "t" + d.x + "-" + d.y + "-" + i, // Create an id for text so we can select it later for removing on mouseout
-        x: function() {
-          return (
-            originX +
-            (radius + basicOffset) * Math.sin((2 * Math.PI * i) / len) -
-            30
-          );
-        },
-        y: function() {
-          return (
-            originY -
-            (radius + basicOffset) * Math.cos((2 * Math.PI * i) / len) -
-            15
-          );
-        }
-      })
-      .text(function() {
-        return d[0]; // Value of the text
-      });
+  function handleMouseOver(d) {
+    div
+      .transition()
+      .duration(200)
+      .style("opacity", 0.9);
+    div
+      .html(d[0])
+      .style("left", d3.event.pageX + "px")
+      .style("top", d3.event.pageY - 28 + "px");
   }
 
-  function handleMouseOut(d, i) {
-    // Use D3 to select element, change color back to normal
-    d3.select(this).attr({
-      fill: "black",
-      r: radius
-    });
-
-    // Select text by id and then remove
-    d3.select("#t" + d.x + "-" + d.y + "-" + i).remove(); // Remove text location
+  function handleMouseOut() {
+    div
+      .transition()
+      .duration(500)
+      .style("opacity", 0);
   }
 
-  function onclick(d) {
+  function expandOntology(d) {
     if (true) {
-      // d3.select("#a").remove();
-      creator(10, datas, d[0]);
-      console.log("TCL: onclick ", d[0], datas);
+      if (visibleOntology.indexOf(d[0]) === -1) {
+        visibleOntology.push(d[0]);
+        creator(10, datas, d[0]);
+      } else {
+        alert("Ontology already visible.");
+      }
+
+      console.log("TCL: onclick ", datas, d[0]);
       var coords = d3.mouse(this);
+    }
+  }
+  function deleteOntology(nodeToDelete) {
+    console.log("nodeTODelete", nodeToDelete, "visible onto", visibleOntology);
+    if (visibleOntology.length > 1) {
+      if (confirm("You sure want to delete this ontology?")) {
+        visibleOntology.pop(nodeToDelete);
+        d3.select("#" + nodeToDelete).remove();
+      }
     }
   }
 }
 
+var visibleOntology = new Array();
+visibleOntology.push(Object.keys(datas)[0]);
 
-creator(10, datas, "n1");
+creator(10, datas, Object.keys(datas)[0]);
