@@ -2,7 +2,6 @@ function creator(radius, data, key) {
   var centerNodeName = key;
   console.log(centerNodeName, data[key]);
   var tempData = data[key];
-  var offset = 30 * [tempData.length * 0.2];
   var len = tempData.length;
   var biggerCircleColor = "#daa520";
   var lineColor = "#A6ACAF";
@@ -10,10 +9,7 @@ function creator(radius, data, key) {
   var labelColor = "black";
   var width;
   var height;
-  var innerCircleRadius = 20;
   var outerCircleRadius = 30;
-  var offset = 30;
-  var angle = 10;
   var basicOffset = 40;
   var gap = 0;
   var chunkSize = outerCircleRadius * 2 + gap * 2;
